@@ -1,0 +1,58 @@
+{
+    "sampling_time_ms" : 3000,
+    "here_credentials" : {
+        "api_key" : "Here_API_KEY"
+    },
+    "eventhub" :{
+        "connection_string" : "Event_Hub_Connection_string_primary_key ", 
+        "name" : "here_api_eventhub"
+    },
+    "cosmosdb" :{
+        "uri" : "Cosmos_DB_URI", 
+        "masterKey" : "Cosmos_DB_PRIMARY_KEY" 
+    },
+    "mongodb": {
+        "uri" : "localhost:27017",
+        "username": "admin",
+        "password": "admin"
+    },
+    "kafka": {
+        "uri": "KAFKA_URI"
+    },
+    "vehicle_map" : [
+        {  "id":0, "lat": 41.834746,  "lon": -87.759434   },
+        {  "id":1, "lat": 41.835613,  "lon": -87.7600445  },
+        {  "id":2, "lat": 41.8375025, "lon": -87.7627006  },
+        {  "id":3, "lat": 41.8338129, "lon": -87.7587817  },
+        {  "id":4, "lat": 41.83468,   "lon": -87.75556    },
+        {  "id":5, "lat": 41.83655,   "lon": -87.754649   },
+        {  "id":6, "lat": 41.8358081, "lon": -87.7510883  },
+        {  "id":7, "lat": 41.8473103, "lon": -87.7544601  },
+        {  "id":8, "lat": 41.8451062, "lon": -87.763967   },
+        {  "id":9, "lat": 41.8445133, "lon": -87.7733764  }
+    ],
+    "next_move" :[
+        {  "latLower":  1,  "latHigher":  4,  "lonLower":  0,  "lonHigher":  1  },
+        {  "latLower":  0,  "latHigher":  1,  "lonLower":  1,  "lonHigher":  4  },
+        {  "latLower": -1,  "latHigher":  0,  "lonLower":  -3,  "lonHigher": 0  },
+        {  "latLower": -1,  "latHigher":  0,  "lonLower":  1,  "lonHigher":  4  },
+        {  "latLower":  0,  "latHigher":  1,  "lonLower":  0,  "lonHigher":  3  },
+        {  "latLower":  0,  "latHigher":  3,  "lonLower": -1,  "lonHigher":  0  },
+        {  "latLower":  0,  "latHigher": 1,  "lonLower":  0,  "lonHigher": -3  },
+        {  "latLower": -2,  "latHigher":  0,  "lonLower":  0,  "lonHigher":  3  },
+        {  "latLower":  1,  "latHigher":  3,  "lonLower": -2,  "lonHigher": 0  },
+        {  "latLower":  1,  "latHigher":  2,  "lonLower":  1,  "lonHigher":  2  }
+    ],
+    "markers" : [
+        { "marker": "circle1",   "color": "red",   "number": "1", "legend": "Truck1" },
+        { "marker": "square1",   "color": "green", "number": "2", "legend": "Truck2" },
+        { "marker": "diamond1",  "color": "yellow","number": "3", "legend": "Truck3" },
+        { "marker": "cross1",    "color": "blue",  "number": "4", "legend": "Truck4" },
+        { "marker": "triangle1", "color": "brown", "number": "5", "legend": "Truck5" },
+        { "marker": "circle1",   "color": "blue",  "number": "6", "legend": "Truck6" },
+        { "marker": "square1",   "color": "yellow","number": "7", "legend": "Truck7" },
+        { "marker": "dot1",      "color": "green", "number": "8", "legend": "Truck8" },
+        { "marker": "triangle1", "color": "yellow","number": "9", "legend": "Truck9" },
+        { "marker": "plus1",     "color": "white", "number": "10","legend": "Truck10" }
+    ]
+}

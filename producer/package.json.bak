@@ -1,0 +1,39 @@
+{
+  "name": "@here/azure-datastream-producer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "data producer for HERE DataStream template",
+  "main": "producer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "HERE Europe B.V.",
+    "url": "https://here.com"
+  },
+  "keywords": [
+    "HERE Technologies",
+    "here",
+    "DataStreams",
+    "Location",
+    "Geocoder",
+    "Routing",
+    "Places",
+    "Positioning",
+    "Map",
+    "Image",
+    "Tile",
+    "Fleet",
+    "Telematics",
+    "Producer"
+  ],
+  "engines": {
+    "node": "8.11.1"
+  },
+  "dependencies": {
+    "@azure/cosmos": "^2.1.5",
+    "@azure/event-hubs": "^2.0.0",
+    "request": "^2.88.0"
+  },
+  "license": "Apache-2.0"
+}

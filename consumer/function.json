@@ -1,0 +1,13 @@
+﻿{
+  "bindings": [
+    {
+      "name": "myEventHubMessage",
+      "connection": "hlseventhub-3qjb4f6qgzsvu_RootManageSharedAccessKey_EVENTHUB",
+      "eventHubName": "here_api_eventhub",
+      "consumerGroup": "$Default",
+      "cardinality": "one",
+      "direction": "in",
+      "type": "eventHubTrigger"
+    }
+  ]
+}

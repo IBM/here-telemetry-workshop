@@ -1,0 +1,33 @@
+{
+  "name": "@here/ibm-producer",
+  "version": "1.0.0",
+  "description": "data producer for here code patterns",
+  "main": "producer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/ibm/here-datastream"
+  },
+  "keywords": [
+    "HERE",
+    "Technologies",
+    "OpenShift",
+    "IBM",
+    "Kafka",
+    "Map",
+    "Image",
+    "Producer",
+    "DataStreams",
+    "Open",
+    "Source"
+  ],
+  "author": "moficodes@ibm.com",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "kafkajs": "^1.12.0",
+    "mongodb": "^3.5.9",
+    "request": "^2.88.2"
+  }
+}
