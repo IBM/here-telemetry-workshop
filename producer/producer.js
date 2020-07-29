@@ -25,13 +25,14 @@
 
 const request = require('request');
 const config = require('./config.json');
+const { Kafka } = require('kafkajs');
 
+const kafka = new Kafka({
+  clientId: config.kafka.clinetId,
+  brokers: config.kafka.brokers,
+})
 
-// const {
-//   EventHubClient
-// } = require('@azure/event-hubs');
-// const ehClient = EventHubClient.createFromConnectionString(config.eventhub.connection_string, config.eventhub.name);
-
+const producer = kafka.producer();
 
 //HERE_API_LOGS DB cleanup before each run so a fresh view is available each time.
 function cleanupDB() {
@@ -39,18 +40,17 @@ function cleanupDB() {
   const databaseId = "here";
   const url = `mongodb://${config.mongodb.username}:${config.mongodb.password}@${config.mongodb.uri}`;
 
-  MongoClient.connect(url, (err, client) => {
-    if (err) throw err;
+  const client = new MongoClient(url, {useUnifiedTopology: true});
+  client.connect().then((client) => {
     const db = client.db(databaseId);
-
-
     db.collection("here").drop((err, ok) => {
       if (err) console.log("Collection Not found");
       if (ok) console.log("Collection Deleted");
     })
     client.close();
-  })
-
+  }).catch((err) => {
+    console.log(err);
+  });
 }
 
 // Route Matching API to help with fetching co-ordinates of nearest road for given point.
@@ -128,12 +128,24 @@ async function generateVehicleData(key) {
 
   // TODO: replace with kafka
   //send to event-hub .
-  ehClient.send(data);
+  await sendToProducer(data);
   logOutput(key, ehMsg);
 }
 //display data over console.
 function logOutput(key, ehMsg) {
   console.log(config.markers[key].legend + "," + ehMsg.latMatched + "," + ehMsg.lonMatched + "," + ehMsg.engineTemperature + "," + ehMsg.engineRPM + "," + ehMsg.engineLoad + "," + ehMsg.coolantTemperature);
+}
+
+async function sendToProducer(data) {
+  await producer.connect();
+  await producer.send({
+    topic: "test",
+    messages: [
+      { key: data.uid, value: JSON.stringify(data) }
+    ]
+  })
+ 
+  await producer.disconnect();
 }
 
 //default set to 5 vehicle 

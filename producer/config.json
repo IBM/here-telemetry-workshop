@@ -1,15 +1,7 @@
 {
     "sampling_time_ms" : 3000,
     "here_credentials" : {
-        "api_key" : "Here_API_KEY"
-    },
-    "eventhub" :{
-        "connection_string" : "Event_Hub_Connection_string_primary_key ", 
-        "name" : "here_api_eventhub"
-    },
-    "cosmosdb" :{
-        "uri" : "Cosmos_DB_URI", 
-        "masterKey" : "Cosmos_DB_PRIMARY_KEY" 
+        "api_key" : "7x4yEAJ1vcqg9xVTyQm8e2ckupTGvOAqmXywECKh9vE"
     },
     "mongodb": {
         "uri" : "localhost:27017",
@@ -17,7 +9,8 @@
         "password": "admin"
     },
     "kafka": {
-        "uri": "KAFKA_URI"
+        "clientId": "here",
+        "brokers": ["localhost:9092", "localhost:9093", "localhost:9094"]
     },
     "vehicle_map" : [
         {  "id":0, "lat": 41.834746,  "lon": -87.759434   },
