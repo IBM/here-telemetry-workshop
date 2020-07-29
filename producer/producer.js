@@ -25,14 +25,14 @@
 
 const request = require('request');
 const config = require('./config.json');
-const { Kafka } = require('kafkajs');
+const { Kafka, Partitioners } = require('kafkajs');
 
 const kafka = new Kafka({
   clientId: config.kafka.clinetId,
   brokers: config.kafka.brokers,
 })
 
-const producer = kafka.producer();
+const producer = kafka.producer({ createPartitioner: Partitioners.JavaCompatiblePartitioner });
 
 //HERE_API_LOGS DB cleanup before each run so a fresh view is available each time.
 function cleanupDB() {
