@@ -1,73 +1,85 @@
 <html>
-    <head>
 
-            <style>
-
-                    code, h1, h2, h3{
-                      color: #124191;
-                      letter-spacing: -0.03em;
-                    }
-                    body {
-                      font-family:"Lucida Grande",Tahoma,sans-serif;
-                      color: rgb(102, 102, 102);
-                      font-size: 80%;
-                      margin: 0%;
-                    }
-                    b, strong {
-                      color: black;
-                    }
-                    code {
-                      font-weight: 700;
-                      font-size: 120%;
-                    }
-
-
-                #navBar {
-                  position: inherit;
-                  width: 100vw;
-                  height: 50px;
-                  background: rgb(44,83,158); /* Old browsers */
-                  background: -moz-linear-gradient(top, rgba(44,83,158,1) 0%, rgba(44,83,158,1) 100%); /* FF3.6-15 */
-                  background: -webkit-linear-gradient(top, rgba(44,83,158,1) 0%,rgba(44,83,158,1) 100%); /* Chrome10-25,Safari5.1-6 */
-                  background: linear-gradient(to bottom, rgba(44,83,158,1) 0%,rgba(44,83,158,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-                  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c539e', endColorstr='#2c539e',GradientType=0 ); /* IE6-9 */
-                  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#7db9e8',GradientType=0 ); /* IE6-9 */
-                  transition: 0.2s;
-                  display: block;
-                  padding: 3px;
-                  padding-bottom: 15px;
-                }
-
-              .floatingNav {
-                width: calc(100vh - 100px); 
-                border-radius: 1px;
-                box-shadow: 5px 1px 1px #e2eccb;
-              }
-
-                    </style>     
-        <!-- SCRIPTS -->
+<head>
+    <style>
+        code,
+        h1,
+        h2,
+        h3 {
+            color: #124191;
+            letter-spacing: -0.03em;
+        }
+        
+        body {
+            font-family: "Lucida Grande", Tahoma, sans-serif;
+            color: rgb(102, 102, 102);
+            font-size: 80%;
+            margin: 0%;
+        }
+        
+        b,
+        strong {
+            color: black;
+        }
+        
+        code {
+            font-weight: 700;
+            font-size: 120%;
+        }
+        
+        #navBar {
+            position: inherit;
+            width: 100vw;
+            height: 50px;
+            background: rgb(44, 83, 158);
+            /* Old browsers */
+            background: -moz-linear-gradient(top, rgba(44, 83, 158, 1) 0%, rgba(44, 83, 158, 1) 100%);
+            /* FF3.6-15 */
+            background: -webkit-linear-gradient(top, rgba(44, 83, 158, 1) 0%, rgba(44, 83, 158, 1) 100%);
+            /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(to bottom, rgba(44, 83, 158, 1) 0%, rgba(44, 83, 158, 1) 100%);
+            /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#2c539e', endColorstr='#2c539e', GradientType=0);
+            /* IE6-9 */
+            filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#1e5799', endColorstr='#7db9e8', GradientType=0);
+            /* IE6-9 */
+            transition: 0.2s;
+            display: block;
+            padding: 3px;
+            padding-bottom: 15px;
+        }
+        
+        .floatingNav {
+            width: calc(100vh - 100px);
+            border-radius: 1px;
+            box-shadow: 5px 1px 1px #e2eccb;
+        }
+    </style>
+    <!-- SCRIPTS -->
     <script type="text/javascript" src="https://code.jquery.com/jquery.min.js"></script>
-    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-core.js"></script>
-    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-service.js"></script>
-    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-ui.js"></script>
-    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-mapevents.js"></script>
-  
+    <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-core-legacy.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-service-legacy.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-ui.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js" type="text/javascript" charset="utf-8"></script>
 </head>
 
-   <body>
-      
-        
-          <div id="navBar" class="floatingNav">
-              <h1 style="color: white;text-align: center">Contoso Corporation Fleet Tracking Dashboard</h1>
-          </div>
-          
-       <!-- BODY -->
- 
-    <div id="map" style="width: 100%; height:auto; background: grey"></div>
-  
-   </body>
+<body>
+    <div id="navBar" class="floatingNav">
+        <h1 style="color: white; text-align: center;">
+            Contoso Corporation Fleet Tracking Dashboard
+        </h1>
+    </div>
 
-   <script type="text/javascript" src="truck_dashboard.js"></script>
+    <!-- BODY -->
 
+    <div id="map" style="width: 100%; height: auto; background: grey;"></div>
+</body>
 
-   </html>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="truck_dashboard.js"></script>
+
+</html>

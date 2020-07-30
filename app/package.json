@@ -1,11 +1,36 @@
 {
-  "name": "azure-cosmosdb-sql-api-nodejs-getting-started",
-  "version": "0.0.0",
-  "description": "A short sample app to demonstrate how to get started with Azure Cosmos DB's SQL API",
-  "main": "app.js",
-  "dependencies": {
-    "@azure/cosmos": "^2.0.0-3",
-    "express": "^4.16.4",
-    "path": "^0.12.7"
-  }
+    "name": "@here/ibm-fleettelemetry-dashboard",
+    "version": "1.0.0",
+    "description": "A short sample app to demonstrate Here fleet telemetry and Openshift",
+    "main": "app.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/IBM/here-telemetry-workshop.git"
+    },
+    "keywords": [
+        "HERE",
+        "Technologies",
+        "OpenShift",
+        "IBM",
+        "Fleet",
+        "Dashboard",
+        "Map",
+        "Image",
+        "Open",
+        "Source"
+    ],
+    "author": "moficodes@ibm.com",
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/IBM/here-telemetry-workshop/issues"
+    },
+    "homepage": "https://github.com/IBM/here-telemetry-workshop#readme",
+    "dependencies": {
+        "express": "^4.16.4",
+        "mongodb": "^3.5.9",
+        "path": "^0.12.7"
+    }
 }
