@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/IBM/here-telemetry-workshop#readme",
   "dependencies": {
-    "kafkajs": "^1.12.0",
-    "mongodb": "^3.5.9"
+    "mongodb": "^3.5.9",
+    "node-rdkafka": "^2.9.1"
   }
 }

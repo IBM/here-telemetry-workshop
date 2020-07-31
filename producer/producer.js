@@ -24,20 +24,34 @@
 'use strict';
 
 const request = require('request');
-const config = require('./config.json');
-const { Kafka, Partitioners } = require('kafkajs');
+const fs = require('fs');
+const Kafka = require('node-rdkafka');
+const { exit } = require('process');
 const MongoClient = require("mongodb").MongoClient;
 
-const kafka = new Kafka({
-    clientId: config.kafka.clientId,
-    brokers: config.kafka.brokers,
-})
+let config = null;
 
-const producer = kafka.producer({ createPartitioner: Partitioners.JavaCompatiblePartitioner });
+(() => {
+    try {
+        config = JSON.parse(fs.readFileSync('config.json'));
+    } catch (err) {
+        if (err.code == "ENOENT") {
+            console.log("config file not found");
+        }
+    }
+})();
+
+const producer = new Kafka.Producer(config.kafka.config);
+producer.connect();
 
 //HERE_API_LOGS DB cleanup before each run so a fresh view is available each time.
 async function cleanupDB() {
-    const url = `mongodb://${config.mongodb.username}:${config.mongodb.password}@${config.mongodb.uri}`;
+    const username = process.env.USERNAME || config.mongodb.username;
+    const password = process.env.PASSWORD || config.mongodb.password;
+    const uri = process.env.URL || config.mongodb.uri;
+
+    const url = `mongodb://${username}:${password}@${uri}`;
+    console.log("attempting mongodb connection")
     const client = await MongoClient.connect(url, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -51,8 +65,9 @@ async function cleanupDB() {
     } catch (e) {
         if (e.codeName === "NamespaceNotFound") {
             console.log("nothing to delete");
+        } else {
+            console.log("some other error happened");
         }
-        console.log("some other error happened");
     }
 }
 
@@ -62,10 +77,10 @@ function getNearsetRoadLatLon(lat, lon) {
         var payload1 = '<gpx xmlns="http://www.topografix.com/GPX/1/1" creator="MapSource 6.16.3" version="1.1"     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"><trk><trkseg><trkpt';
         var payload2 = '></trkpt></trkseg></trk></gpx>';
 
-
+        const apikey = process.env.HERE_API_KEY || config.here_credentials.api_key;
         var finalPayLoad = payload1 + " lat=\"" + lat + "\"" + " lon=\"" + lon + "\"" + payload2;
         request.post({
-                url: 'https://m.fleet.ls.hereapi.com/2/matchroute.json?routemode=car&apiKey=' + config.here_credentials.api_key,
+                url: 'https://m.fleet.ls.hereapi.com/2/matchroute.json?routemode=car&apiKey=' + apikey,
                 body: finalPayLoad,
                 headers: {
                     'Content-Type': 'text/xml'
@@ -131,8 +146,11 @@ async function generateVehicleData(key) {
     };
 
     // TODO: replace with kafka
-    //send to event-hub .
-    await sendToProducer(data);
+    const topic = "newtopic";
+    const partition = -1;
+    const message = Buffer.from(JSON.stringify(data));
+    const kafkaKey = ehMsg.uid;
+    producer.produce(topic, partition, message, kafkaKey);
     logOutput(key, ehMsg);
 }
 //display data over console.
@@ -207,6 +225,9 @@ async function preFlight() {
 preFlight();
 
 // Generate data for given number of vehicle every 'X' seconds as configured.
-for (var key = 0; key < vehicleCount; key++) {
-    setInterval(generateVehicleData, config.sampling_time_ms, key);
-}
+producer.on('ready', () => {
+    console.log("producer connected");
+    for (var key = 0; key < vehicleCount; key++) {
+        setInterval(generateVehicleData, config.sampling_time_ms, key);
+    }
+})

@@ -1,13 +1,22 @@
 // @ts-nocheck
 var express = require('express');
-var app = express();
-
-const config = require('./config.json');
+var fs = require('fs');
 var path = require('path');
+var app = express();
 
 const MongoClient = require("mongodb").MongoClient;
 
+let config = null;
 
+(() => {
+    try {
+        config = JSON.parse(fs.readFileSync('config.json'));
+    } catch (err) {
+        if (err.code == "ENOENT") {
+            console.log("config file not found");
+        }
+    }
+})();
 
 const HttpStatusCodes = { NOTFOUND: 404 };
 
@@ -249,28 +258,5 @@ async function queryContainerforLatLong() {
 };
 
 app.listen(port);
-console.log('Server Listening at port' + port);
-
-/* var server = app.listen(8081, function () {
-   var host = server.address().address
-   var port = server.address().port
-
-   console.log("Example app listening at http://%s:%s", host, port)
-}) */
-
-/**
- * Exit the app with a prompt
- * @param {message} message - The message to display
- */
-/* function exit(message) {
-    console.log(message);
-    console.log('Press any key to exit');
-    process.stdin.setRawMode(true);
-    process.stdin.resume();
-    process.stdin.on('data', process.exit.bind(process, 0));
-}
-
-queryContainer()
-   // .then(() => queryContainer())
-    .then(() => { exit(`Completed successfully`); })
-    .catch((error) => { exit(`Completed with error ${JSON.stringify(error)}`) }); */
+console.log('Server Listening at port ' + port);
+console.log('Visit <app-route>/graph to see fleet telemetry')

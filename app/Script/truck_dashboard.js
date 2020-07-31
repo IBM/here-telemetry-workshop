@@ -10,9 +10,6 @@
 var map, marker;
 var delay = 5000;
 
-alert(apikey);
-// const api_key = "7x4yEAJ1vcqg9xVTyQm8e2ckupTGvOAqmXywECKh9vE"; //HERE API_KEY
-
 
 // If you set the delay below 1000ms and you go to another tab,
 // the setTimeout function will wait to be the active tab again

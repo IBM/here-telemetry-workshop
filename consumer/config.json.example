@@ -1,7 +1,4 @@
 {
-    "here_credentials": {
-        "api_key": "<HERE_API_KEY>"
-    },
     "mongodb": {
         "uri": "<DB_URL>",
         "dbname": "<DB_NAME>",
@@ -10,6 +7,6 @@
     },
     "kafka": {
         "clientId": "<KAFKA_CLIENT_ID>",
-        "brokers": ["<BROKER1>", "<BROKER2>"]
+        "brokers": ["<BROKER1>,<BROKER2>"]
     }
 }

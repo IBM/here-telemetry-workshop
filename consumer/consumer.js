@@ -1,16 +1,31 @@
-const { Kafka, Partitioners } = require('kafkajs');
-const config = require("./config.json")
+const Kafka = require('node-rdkafka');
+const fs = require('fs');
 const MongoClient = require("mongodb").MongoClient;
 
+let config = null;
 
-const kafka = new Kafka({
-    clientId: config.kafka.clientId,
-    brokers: config.kafka.brokers,
-})
+(() => {
+    try {
+        config = JSON.parse(fs.readFileSync('config.json'));
+    } catch (err) {
+        if (err.code == "ENOENT") {
+            console.log("config file not found");
+        }
+    }
+})();
 
-const consumer = kafka.consumer({ groupId: 'here' });
+
+
+const consumerConfig = {
+    'metadata.broker.list': 'localhost:9092,localhost:9093,localhost:9094',
+    'group.id': 'node-rdkafka-consumer-flow-example',
+    'enable.auto.commit': false
+}
+
+const consumer = new Kafka.KafkaConsumer(consumerConfig);
 
 async function insertInMongo(data) {
+
     const url = `mongodb://${config.mongodb.username}:${config.mongodb.password}@${config.mongodb.uri}`;
     const client = await MongoClient.connect(url, {
         useNewUrlParser: true,
@@ -18,33 +33,54 @@ async function insertInMongo(data) {
     }).catch((err) => {
         console.log("could not connect to db");
     });
-    console.log("db connected");
     try {
         await client.db(config.mongodb.dbname).collection("metrics").insertOne(data);
-        console.log("inserted 1 record");
     } catch (e) {
+        console.log("some error happened");
         console.log(e.codeName);
     } finally {
         client.close();
     }
 }
 
+consumer.on("ready", () => {
+    console.log("consumer connected");
+    const topic = "newtopic";
+    consumer.subscribe([topic]);
+    consumer.consume();
+});
 
-async function consume() {
-    await consumer.connect();
-    await consumer.subscribe({ topic: "here", fromBeginning: false });
-    await consumer.run({
-        eachMessage: async({ topic, partition, message }) => {
-            try {
-                console.log("data found");
-                const { body } = JSON.parse(message.value.toString());
-                await insertInMongo(body);
-            } catch (e) {
-                console.log("some error happened");
-            }
+consumer.on('event.log', function(log) {
+    console.log(log);
+});
 
-        }
-    })
-}
+//logging all errors
+consumer.on('event.error', function(err) {
+    console.error('Error from consumer');
+    console.error(err);
+});
 
-consume();
+counter = 0;
+numMessages = 10;
+
+consumer.on('data', async(m) => {
+    counter++;
+
+    //committing offsets every numMessages
+    if (counter % numMessages === 0) {
+        consumer.commit(m);
+    }
+
+    try {
+        const { body } = JSON.parse(m.value.toString());
+        console.log(`telemetry received: ${body.vehicleId},${body.latMatched},${body.lonMatched},${body.engineTemperature},${body.engineRPM},${body.engineLoad},${body.coolantTemperature}`)
+        await insertInMongo(body);
+    } catch (e) {
+        console.log("some error happened");
+    }
+
+});
+
+consumer.connect();
+
+setInterval(() => {}, 1000 * 60 * 60); // hour tick to stop the program from exiting
