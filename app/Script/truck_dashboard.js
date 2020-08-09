@@ -36,8 +36,8 @@ function animateMarker(marker, vid) {
             var deltaLng = (res[0]["lonMatched"]);
 
             function moveMarker() {
-                lat = deltaLat;
-                lng = deltaLng;
+                const lat = deltaLat;
+                const lng = deltaLng;
                 marker.setVisibility(false);
                 marker = new H.map.Marker({ lat: lat, lng: lng }, { icon: defaultIcon });
                 map.addObject(marker);
@@ -56,7 +56,7 @@ function animateMarker(marker, vid) {
  */
 
 //Step 1: initialize communication with the platform
-function loadmap(clat, clon) {
+function loadmap(clat, clon, apikey) {
 
     var platform = new H.service.Platform({
         apikey: apikey,
@@ -96,12 +96,16 @@ function loadmap(clat, clon) {
 // Step 5: Create Ecent listner
 
 function addClickEventListenerToMap() {
+    var apikey;
+    window.fetch("/secret/apikey").then(data => data.json()).then(key => {
+        apikey = key.apikey;
+    });
 
     window.fetch("/clat").then(clat => clat.json()).then(clat1 => {
         var dlat = clat1[0]['latMatched'];
         var dlon = clat1[0]['lonMatched'];
         console.log('\tQuery returned:' + clat1[0]['latMatched'] + "," + clat1[0]['lonMatched'] + '\n');
-        loadmap(dlat, dlon);
+        loadmap(dlat, dlon, apikey);
 
         window.fetch("/trucks").then(rvid => rvid.json()).then(resvid => {
                 for (var queryResult of resvid) {
@@ -121,6 +125,7 @@ function addClickEventListenerToMap() {
 
     // animateMarker(marker, 1); 
 }
-addClickEventListenerToMap(map);
+
+addClickEventListenerToMap();
 
 $('head').append('<link rel="stylesheet" href="https://js.api.here.com/v3/3.0/mapsjs-ui.css" type="text/css" />');

@@ -4,17 +4,8 @@ FROM node:14.7.0-alpine
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 RUN apk --no-cache add \
-      bash \
-      g++ \
       ca-certificates \
-      lz4-dev \
-      musl-dev \
-      cyrus-sasl-dev \
-      openssl-dev \
-      make \
-      python
-
-RUN apk add --no-cache --virtual .build-deps gcc zlib-dev libc-dev bsd-compat-headers py-setuptools bash
+      openssl-dev 
 
 # Create app directory
 RUN mkdir -p /usr/local/app
@@ -26,9 +17,14 @@ COPY package.json package-lock.json ./
 
 RUN npm install
 
+COPY . .
+
+RUN chown -R appuser:appgroup Script
+
 # Tell docker that all future commands should run as the appuser user
 USER appuser
 
-COPY producer.js appconfig.json ./
 
-CMD [ "node", "producer.js" ]
+EXPOSE 3000
+
+CMD [ "node", "app.js" ]

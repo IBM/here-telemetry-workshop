@@ -2,7 +2,7 @@ const Kafka = require('node-rdkafka');
 const fs = require('fs');
 const MongoClient = require("mongodb").MongoClient;
 
-let config = null;
+let config = {};
 
 (() => {
     try {
@@ -14,27 +14,40 @@ let config = null;
     }
 })();
 
-
-
 const consumerConfig = {
-    'metadata.broker.list': 'localhost:9092,localhost:9093,localhost:9094',
-    'group.id': 'node-rdkafka-consumer-flow-example',
+    'metadata.broker.list': process.env.KAFKA_BROKERS || config.kafkaBrokers || 'localhost:9092,localhost:9093,localhost:9094',
+    'group.id': process.env.KAFKA_CONSUMER_GROUP_ID || config.kafkaGroupID || 'here-consumer-group',
     'enable.auto.commit': false
 }
 
 const consumer = new Kafka.KafkaConsumer(consumerConfig);
 
 async function insertInMongo(data) {
+    const url = process.env.MONGO_CONNECTION_URL || config.mongoConnectionURL || "mongodb://admin:admin@localhost:27017"
 
-    const url = `mongodb://${config.mongodb.username}:${config.mongodb.password}@${config.mongodb.uri}`;
-    const client = await MongoClient.connect(url, {
+    const clientSettings = {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-    }).catch((err) => {
+    };
+    // if mongo db has database cert
+    if (process.env.DATABASE_CERT) {
+        fs.writeFileSync("./cert.pem", process.env.DATABASE_CERT);
+        clientSettings.tls = true;
+        clientSettings.tlsCAFile = "./cert.pem";
+    }
+
+    const client = await MongoClient.connect(url, clientSettings).catch((err) => {
         console.log("could not connect to db");
     });
+
+    if (!client) {
+        return;
+    }
+
+    const dbname = process.env.MONGODB_NAME || config.mongodbName || "here";
+
     try {
-        await client.db(config.mongodb.dbname).collection("metrics").insertOne(data);
+        await client.db(dbname).collection("metrics").insertOne(data);
     } catch (e) {
         console.log("some error happened");
         console.log(e.codeName);
@@ -45,7 +58,7 @@ async function insertInMongo(data) {
 
 consumer.on("ready", () => {
     console.log("consumer connected");
-    const topic = "newtopic";
+    const topic = "metrics";
     consumer.subscribe([topic]);
     consumer.consume();
 });
@@ -60,8 +73,8 @@ consumer.on('event.error', function(err) {
     console.error(err);
 });
 
-counter = 0;
-numMessages = 10;
+let counter = 0;
+const numMessages = 10;
 
 consumer.on('data', async(m) => {
     counter++;

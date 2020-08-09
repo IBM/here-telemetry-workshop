@@ -6,7 +6,7 @@ var app = express();
 
 const MongoClient = require("mongodb").MongoClient;
 
-let config = null;
+let config = {};
 
 (() => {
     try {
@@ -18,9 +18,9 @@ let config = null;
     }
 })();
 
+const hereapikey = process.env.HERE_API_KEY || config.hereApiKey;
+
 const HttpStatusCodes = { NOTFOUND: 404 };
-
-
 
 var port = process.env.PORT || 3000;
 
@@ -112,18 +112,46 @@ app.get('/speedgraph/coolantTemperature/:id', async function(req, res) {
     res.json(results);
 });
 
+app.get('/secret/apikey', async function(req, res) {
+    const apikey = process.env.HERE_API_KEY || config.hereApiKey;
+    res.json({apikey});
+})
+
+async function getMongoClient() {
+    const url =
+    process.env.MONGO_CONNECTION_URL ||
+    config.mongoConnectionURL ||
+    "mongodb://admin:admin@localhost:27017";
+
+  const clientSettings = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  };
+  // if mongo db has database cert
+  if (process.env.DATABASE_CERT) {
+    fs.writeFileSync("./cert.pem", process.env.DATABASE_CERT);
+    clientSettings.tls = true;
+    clientSettings.tlsCAFile = "./cert.pem";
+  }
+
+  const client = await MongoClient.connect(url, clientSettings).catch((err) => {
+    console.log("could not connect to db");
+  });
+
+  return client;
+}
 
 async function engineTemperature(vid) {
-    const url = `mongodb://${config.mongodb.username}:${config.mongodb.password}@${config.mongodb.uri}`;
-    const client = await MongoClient.connect(url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    }).catch((err) => {
-        console.log("could not connect to db");
-    });
+    const client = await getMongoClient();
+    if (!client) {
+        return;
+    }
     console.log("db connected");
+
+    const dbname = process.env.MONGODB_NAME || config.mongodbName || "here";
+
     try {
-        const data = await client.db(config.mongodb.dbname).collection("metrics").find({ vehicleId: vid }).project({ timestamp: 1, engineTemperature: 1, _id: 0 }).sort({ timestamp: -1 }).limit(100).toArray(); //engineTemperature
+        const data = await client.db(dbname).collection("metrics").find({ vehicleId: vid }).project({ timestamp: 1, engineTemperature: 1, _id: 0 }).sort({ timestamp: -1 }).limit(100).toArray(); //engineTemperature
         console.log(data);
         return data;
     } catch (e) {
@@ -135,16 +163,16 @@ async function engineTemperature(vid) {
 
 
 async function engineRPM(vid) {
-    const url = `mongodb://${config.mongodb.username}:${config.mongodb.password}@${config.mongodb.uri}`;
-    const client = await MongoClient.connect(url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    }).catch((err) => {
-        console.log("could not connect to db");
-    });
+    const client = await getMongoClient();
+    if (!client) {
+        return;
+    }
     console.log("db connected");
+
+    const dbname = process.env.MONGODB_NAME || config.mongodbName || "here";
+
     try {
-        const data = await client.db(config.mongodb.dbname).collection("metrics").find({ vehicleId: vid }).project({ timestamp: 1, engineRPM: 1, _id: 0 }).sort({ timestamp: -1 }).limit(100).toArray(); //engineRPM
+        const data = await client.db(dbname).collection("metrics").find({ vehicleId: vid }).project({ timestamp: 1, engineRPM: 1, _id: 0 }).sort({ timestamp: -1 }).limit(100).toArray(); //engineRPM
         console.log(data);
         return data;
     } catch (e) {
@@ -156,16 +184,16 @@ async function engineRPM(vid) {
 
 
 async function engineLoad(vid) {
-    const url = `mongodb://${config.mongodb.username}:${config.mongodb.password}@${config.mongodb.uri}`;
-    const client = await MongoClient.connect(url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    }).catch((err) => {
-        console.log("could not connect to db");
-    });
+    const client = await getMongoClient();
+    if (!client) {
+        return;
+    }
     console.log("db connected");
+
+    const dbname = process.env.MONGODB_NAME || config.mongodbName || "here";
+
     try {
-        const data = await client.db(config.mongodb.dbname).collection("metrics").find({ vehicleId: vid }).project({ timestamp: 1, engineLoad: 1, _id: 0 }).sort({ timestamp: -1 }).limit(100).toArray(); //engineLoad
+        const data = await client.db(dbname).collection("metrics").find({ vehicleId: vid }).project({ timestamp: 1, engineLoad: 1, _id: 0 }).sort({ timestamp: -1 }).limit(100).toArray(); //engineLoad
         console.log(data);
         return data;
     } catch (e) {
@@ -177,16 +205,16 @@ async function engineLoad(vid) {
 
 
 async function coolantTemperature(vid) {
-    const url = `mongodb://${config.mongodb.username}:${config.mongodb.password}@${config.mongodb.uri}`;
-    const client = await MongoClient.connect(url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    }).catch((err) => {
-        console.log("could not connect to db");
-    });
+    const client = await getMongoClient();
+    if (!client) {
+        return;
+    }
     console.log("db connected");
+
+    const dbname = process.env.MONGODB_NAME || config.mongodbName || "here";
+
     try {
-        const data = await client.db(config.mongodb.dbname).collection("metrics").find({ vehicleId: vid }).project({ timestamp: 1, coolantTemperature: 1, _id: 0 }).sort({ timestamp: -1 }).limit(100).toArray(); //coolantTemperature
+        const data = await client.db(dbname).collection("metrics").find({ vehicleId: vid }).project({ timestamp: 1, coolantTemperature: 1, _id: 0 }).sort({ timestamp: -1 }).limit(100).toArray(); //coolantTemperature
         console.log(data);
         return data;
     } catch (e) {
@@ -198,15 +226,16 @@ async function coolantTemperature(vid) {
 
 
 async function queryContainer(vid) {
-    const url = `mongodb://${config.mongodb.username}:${config.mongodb.password}@${config.mongodb.uri}`;
-    const client = await MongoClient.connect(url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    }).catch((err) => {
-        console.log("could not connect to db");
-    });
+    const client = await getMongoClient();
+    if (!client) {
+        return;
+    }
+    console.log("db connected");
+
+    const dbname = process.env.MONGODB_NAME || config.mongodbName || "here";
+
     try {
-        const data = await client.db(config.mongodb.dbname).collection("metrics").find({ vehicleId: vid }).project({ latMatched: 1, lonMatched: 1, _id: 0 }).sort({ timestamp: -1 }).limit(1).toArray(); //queryContainer
+        const data = await client.db(dbname).collection("metrics").find({ vehicleId: vid }).project({ latMatched: 1, lonMatched: 1, _id: 0 }).sort({ timestamp: -1 }).limit(1).toArray(); //queryContainer
         console.log(data);
         return data;
     } catch (e) {
@@ -217,16 +246,16 @@ async function queryContainer(vid) {
 };
 
 async function queryContainerforVid() {
-    const url = `mongodb://${config.mongodb.username}:${config.mongodb.password}@${config.mongodb.uri}`;
-    const client = await MongoClient.connect(url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    }).catch((err) => {
-        console.log("could not connect to db");
-    });
+    const client = await getMongoClient();
+    if (!client) {
+        return;
+    }
     console.log("db connected");
+
+    const dbname = process.env.MONGODB_NAME || config.mongodbName || "here";
+
     try {
-        const data = await client.db(config.mongodb.dbname).collection("metrics").distinct("vehicleId"); //queryContainerforVid
+        const data = await client.db(dbname).collection("metrics").distinct("vehicleId"); //queryContainerforVid
         console.log(data);
         return data;
     } catch (e) {
@@ -238,16 +267,16 @@ async function queryContainerforVid() {
 
 
 async function queryContainerforLatLong() {
-    const url = `mongodb://${config.mongodb.username}:${config.mongodb.password}@${config.mongodb.uri}`;
-    const client = await MongoClient.connect(url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    }).catch((err) => {
-        console.log("could not connect to db");
-    });
+    const client = await getMongoClient();
+    if (!client) {
+        return;
+    }
     console.log("db connected");
+
+    const dbname = process.env.MONGODB_NAME || config.mongodbName || "here";
+
     try {
-        const data = await client.db(config.mongodb.dbname).collection("metrics").find({}).project({ latMatched: 1, lonMatched: 1, _id: 0 }).sort({ timestamp: -1 }).limit(1).toArray(); // queryContainerforLatLong
+        const data = await client.db(dbname).collection("metrics").find({}).project({ latMatched: 1, lonMatched: 1, _id: 0 }).sort({ timestamp: -1 }).limit(1).toArray(); // queryContainerforLatLong
         console.log(data);
         return data;
     } catch (e) {

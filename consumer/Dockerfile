@@ -1,4 +1,4 @@
-FROM node:10.22.0-alpine
+FROM node:14.7.0-alpine
 
 # Create a group and user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
@@ -29,6 +29,6 @@ RUN npm install
 # Tell docker that all future commands should run as the appuser user
 USER appuser
 
-COPY producer.js config.json ./
+COPY consumer.js ./
 
 CMD [ "node", "consumer.js" ]

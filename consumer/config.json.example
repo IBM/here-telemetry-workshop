@@ -1,12 +1,7 @@
 {
-    "mongodb": {
-        "uri": "<DB_URL>",
-        "dbname": "<DB_NAME>",
-        "username": "<DB_USERNAME>",
-        "password": "<DB_PASSWORD>"
-    },
-    "kafka": {
-        "clientId": "<KAFKA_CLIENT_ID>",
-        "brokers": ["<BROKER1>,<BROKER2>"]
-    }
+    "kafkaClientID": "<KAFKA_CLIENT_ID>",
+    "kafkaBrokers": "<KAFKA_BROKERS_LIST_COMMA_SEPARATE>",
+    "kafkaGroupID": "<KAFKA_GROUP_ID>",
+    "mongodbName": "<MONGO_DB_NAME>",
+    "mongoConnectionURL": "<MONGO_CONNECTION_URL>"
 }

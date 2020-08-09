@@ -1,6 +1,23 @@
 version: '3.3'
 
 services:
+  producer:
+    image: moficodes/here-telemetry-producer:v1.0.0
+    depends_on: 
+      - mongo
+    environment:
+      - KAFKA_BROKERS="kafka1:9092,kafka2:9093,kafka3:9094"
+      - MONGO_CONNECTION_URL=mongodb://admin:admin@mongo:27017
+      - HERE_API_KEY="<HERE_API_KEY>"
+  consumer:
+    image: moficodes/here-telemetry-consumer:v1.0.0
+    ports:
+      - "9101:9101"
+    depends_on: 
+      - mongo
+    environment:
+      - KAFKA_BROKERS="kafka1:9092,kafka2:9093,kafka3:9094"
+      - MONGO_CONNECTION_URL=mongodb://admin:admin@mongo:27017
   webapp:
     image: moficodes/here-telemetry-web:v1.0.0
     ports:
@@ -9,7 +26,7 @@ services:
       - mongo
     environment:
       - MONGO_CONNECTION_URL=mongodb://admin:admin@mongo:27017
-      - HERE_API_KEY="<HERE_API_KEY_HERE>"
+      - HERE_API_KEY="<HERE_API_KEY>"
   mongo:
     container_name: mongo
     ports:

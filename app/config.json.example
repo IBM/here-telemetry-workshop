@@ -1,11 +1,5 @@
 {
-    "here_credentials": {
-        "api_key": "<HERE_API_KEY>"
-    },
-    "mongodb": {
-        "uri": "<DB_URL>",
-        "dbname": "<DB_NAME>",
-        "username": "<DB_USERNAME>",
-        "password": "<DB_PASSWORD>"
-    }
+    "mongodbName": "<MONGO_DB_NAME>",
+    "mongoConnectionURL": "<MONGO_CONNECTION_URL>",
+    "hereApiKey": "<HERE_API_KEY>"
 }
