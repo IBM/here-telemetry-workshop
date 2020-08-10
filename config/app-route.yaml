@@ -1,0 +1,25 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: webapp
+  labels:
+    app: webapp
+    app.kubernetes.io/component: webapp
+    app.kubernetes.io/instance: webapp
+    app.kubernetes.io/part-of: here
+    app.openshift.io/runtime-version: v1.0.0
+  annotations:
+    openshift.io/host.generated: 'true'
+spec:
+  host: >-
+    here-metrics.mofi-oc-888450-442dbba0442be6c8c50f31ed96b00601-0000.us-south.containers.appdomain.cloud
+  to:
+    kind: Service
+    name: webapp
+    weight: 100
+  port:
+    targetPort: 3000-tcp
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

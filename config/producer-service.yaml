@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: producer
+  labels:
+    app: producer
+    app.kubernetes.io/component: producer
+    app.kubernetes.io/instance: producer
+    app.kubernetes.io/part-of: here
+    app.openshift.io/runtime-version: v1.0.0
+spec:
+  selector:
+    app: producer
+    deploymentconfig: producer
+  type: ClusterIP

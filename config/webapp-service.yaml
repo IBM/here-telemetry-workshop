@@ -1,0 +1,20 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: webapp
+  labels:
+    app: webapp
+    app.kubernetes.io/component: webapp
+    app.kubernetes.io/instance: webapp
+    app.kubernetes.io/part-of: here
+    app.openshift.io/runtime-version: v1.0.0
+spec:
+  ports:
+    - name: 3000-tcp
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: webapp
+    deploymentconfig: webapp
+  type: ClusterIP

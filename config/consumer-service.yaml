@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: consumer
+  labels:
+    app: consumer
+    app.kubernetes.io/component: consumer
+    app.kubernetes.io/instance: consumer
+    app.kubernetes.io/part-of: here
+    app.openshift.io/runtime-version: v1.0.0
+spec:
+  selector:
+    app: consumer
+    deploymentconfig: consumer
+  type: ClusterIP

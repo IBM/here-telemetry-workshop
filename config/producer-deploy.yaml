@@ -1,0 +1,54 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: producer
+  labels:
+    app: producer
+    app.kubernetes.io/component: producer
+    app.kubernetes.io/instance: producer
+    app.kubernetes.io/part-of: here
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: producer
+  template:
+    metadata:
+      labels:
+        app: producer
+        deploymentconfig: producer
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+    spec:
+      containers:
+        - name: producer
+          resources:
+            limits:
+              cpu: 500m
+              memory: 2Gi
+            requests:
+              cpu: 500m
+              memory: 2Gi
+          image: >-
+            moficodes/here-telemetry-producer@sha256:be961e037ac6b79e440846b12ca97cd96317353ed69f1b55a94884bb268568e1
+          env:
+            - name: KAFKA_BROKERS
+              value: >-
+                kafka-cluster-kafka-0.kafka-cluster-kafka-brokers,kafka-cluster-kafka-1.kafka-cluster-kafka-brokers,kafka-cluster-kafka-2.kafka-cluster-kafka-brokers
+            - name: MONGO_CONNECTION_URL
+              value: 'mongodb://admin:admin@mongodb:27017'
+            - name: HERE_API_KEY
+              valueFrom:
+                  secretKeyRef:
+                    name: here-secret
+                    key: apikey
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

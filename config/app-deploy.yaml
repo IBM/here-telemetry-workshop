@@ -1,0 +1,52 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: webapp
+  namespace: here-test
+  labels:
+    app: webapp
+    app.kubernetes.io/component: webapp
+    app.kubernetes.io/instance: webapp
+    app.kubernetes.io/part-of: here
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+        deploymentconfig: webapp
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+    spec:
+      containers:
+        - name: webapp
+          resources:
+            limits:
+              cpu: 500m
+              memory: 2Gi
+            requests:
+              cpu: 500m
+              memory: 2Gi
+          image: >-
+            moficodes/here-telemetry-web@sha256:b9fc6448edb329de2d09537a2e0aa44a51c74da69ae310e354785f9560a259ba
+          env:
+            - name: MONGO_CONNECTION_URL
+              value: 'mongodb://admin:admin@mongodb:27017'
+            - name: HERE_API_KEY
+              valueFrom:
+                  secretKeyRef:
+                    name: here-secret
+                    key: apikey
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

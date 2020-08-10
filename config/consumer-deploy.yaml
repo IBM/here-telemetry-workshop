@@ -1,0 +1,55 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: consumer
+  namespace: here-test
+  labels:
+    app: consumer
+    app.kubernetes.io/component: consumer
+    app.kubernetes.io/instance: consumer
+    app.kubernetes.io/part-of: consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consumer
+  template:
+    metadata:
+      labels:
+        app: consumer
+        deploymentconfig: consumer
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+    spec:
+      containers:
+        - name: consumer
+          resources:
+            limits:
+              cpu: 500m
+              memory: 2Gi
+            requests:
+              cpu: 500m
+              memory: 2Gi
+          image: >-
+            moficodes/here-telemetry-consumer@sha256:af8edf08ded90041c9f691ffa794e9648ce4716eeb6be71b2cc076f799609111
+          env:
+            - name: KAFKA_BROKERS
+              value: >-
+                kafka-cluster-kafka-0.kafka-cluster-kafka-brokers,kafka-cluster-kafka-1.kafka-cluster-kafka-brokers,kafka-cluster-kafka-2.kafka-cluster-kafka-brokers
+            - name: MONGO_CONNECTION_URL
+              value: 'mongodb://admin:admin@mongodb:27017'
+            - name: HERE_API_KEY
+              valueFrom:
+                  secretKeyRef:
+                    name: here-secret
+                    key: apikey
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
