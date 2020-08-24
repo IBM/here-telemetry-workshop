@@ -2,7 +2,6 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: consumer
-  namespace: here-test
   labels:
     app: consumer
     app.kubernetes.io/component: consumer
