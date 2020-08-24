@@ -126,3 +126,190 @@ Project is OpenShifts way to isolate workload and allow for multitenency. All ou
 5. After some time (Typically 30s to 1min) we should be able to see the mongo deployment.
 
 ![](../readme-images/mongo-deployment-complete.png)
+
+## Step 7: Deploy Kafka
+
+1. Move to Adminstrator tab in the console.
+
+![](../readme-images/move-to-administrator.png)
+
+2. Go to `Operators > OperatorHub`. Search for `strimzi`. Click on `Strimzi`
+
+![](../readme-images/search-strimzi.png)
+
+[Strimzi](https://strimzi.io) is an Operator that manages the install lifecycle of Kafka on Kubernetes.
+
+3. Instal Strimzi
+
+![](../readme-images/install-strimzi.png)
+
+4. Confirm installation of Community Operator. 
+
+![](../readme-images/continue-community-install.png)
+
+> Community Operators are operators that are made and maintained by the Operator Community. OpenShift does not provide any gurantee or support for it. 
+
+5. Subscibe to the operator for the `here-metrics` namespace.
+
+![](../readme-images/install-for-namespace.png)
+
+6. After a moment we should be able to see `Strimzi` in our installed operator list. Click on `Strimzi`
+
+![](../readme-images/strimzi-install-complete.png)
+
+7. Click on create Kafka Instance
+
+![](../readme-images/create-kafka-instance.png)
+
+8. Lets name our instance `kafka-cluster` and change the storage to `ephemeral`. And click `Create`
+
+![](../readme-images/modify-kafka-yaml.png)
+
+9. Go to `Workloads > Pods` and after some time we should see 6 new pods. 3 kafka broker and 3 zookeeper instance. 
+
+![](../readme-images/kafka-running.png)
+
+With that our kafka installation is complete.
+
+Lets move back to developer view for the next steps
+
+![](../readme-images/move-to-developer.png)
+
+## Step 8: Deploy Webapp
+
+1. Click on `+Add` and then Select `From Dockerfile`
+
+![](../readme-images/deploy-from-git-with-dockerfile.png)
+
+We will use the dockerfile we have for our application and openshift will build the container and push it to a local registry. This is a great feature of OpenShift that allows us to have the image local to the cluster.
+
+2.  For our Git Repo URL use. 
+
+```
+https://github.com/IBM/here-telemetry-workshop
+```
+
+If you made a fork of the project. You can use that too. Click on `Show Advance Git Options` and change the `Context Dir` to `/app`. We need to do this because the `Dockerfile` for our consumer service lives in the `/app` path relative to the git root.
+
+For the `Dockerfile` section set the `Container Port` to `3000`.
+
+In General set Application name to `here` and name to `webapp`. Application is a way to group different services together. We will group services created by us into a single group like this. 
+
+Set Resources to `Deployment Config`.
+
+In Advanced Options check `Create route`
+
+Click on routes, deployment and build configuration in the bottom of the page right above the `Create` button.
+
+In Routing security check secure route. If you are trying this on a openshift cluster not managed by IBM keep this unchecked. All IBM OpenShift clusters come pre configured with a TLS certificate for your application routes. For `TLS termination` select `Edge` and for `Insecure Traffic` select `Redirect`.
+
+For deployment we need 2 environmental variables.
+
+`MONGO_CONNECTION_URL`
+```
+mongodb://admin:admin@mongodb:27017
+```
+
+`HERE_API_KEY`
+```
+<YOUR_HERE_API_KEY>
+```
+
+![](../readme-images/console-openshift-console.png)
+
+3. Go to `Builds` and then select `webapp` 
+
+![](../readme-images/check-build-webapp.png)
+
+4. Under `Builds` tab select `webapp-1`
+
+![](../readme-images/webapp-build-logs.png)
+
+5. Go to `Logs` to see the build log. After some time you should see the build is complete.
+
+![](../readme-images/webapp-build-logs.png)
+
+
+## Step 9: Deploy Consumer
+
+1. Click on `+Add` and then Select `From Dockerfile`
+
+![](../readme-images/deploy-from-git-with-dockerfile.png)
+
+We will use the dockerfile we have for our application and openshift will build the container and push it to a local registry. This is a great feature of OpenShift that allows us to have the image local to the cluster.
+
+2. For our Git Repo URL use. If you made a fork of the project. You can use that too. Click on `Show Advance Git Options` and change the `Context Dir` to `/consumer`. We need to do this because the `Dockerfile` for our consumer service lives in the `/consumer` path relative to the git root.
+
+```
+https://github.com/IBM/here-telemetry-workshop
+```
+
+![](../readme-images/consumer-dc.png)
+
+3. Giv the Application Name `here` and Name `consumer`. For the resource type select `Deployment Config`. Deployment config is very much like a regular kubernetes deployment with a few extra features unique to OpenShift. And uncheck the create route to the application. Since this is an internal service, we do not want to have a route to it.
+
+![](../readme-images/consumer-dc-2.png)
+
+4. For the Deployment configuration set the following environmental variables.
+
+> You might not see this options. Scroll to the bottom of the page and right above `Create` you can click deployment to make this options available.
+
+`KAFKA_BROKERS` 
+```
+kafka-cluster-kafka-0.kafka-cluster-kafka-brokers,kafka-cluster-kafka-1.kafka-cluster-kafka-brokers,kafka-cluster-kafka-2.kafka-cluster-kafka-brokers
+```
+
+`MONGO_CONNECTION_URL`
+```
+mongodb://admin:admin@mongodb:27017
+```
+
+Select all the options as shown in the image below and click `Create`
+
+> This variables correspond to the services we deployed in previous steps. If you changed the values from the default change these variables accordingly
+
+![](../readme-images/consumer-dc-3.png)
+
+5. Go to the build tab and select `consumer`
+
+![](../readme-images/check-consumer-build.png)
+
+6. Check logs to see the build. This might take a moment. But eventually you will see the image was build and successfully pushed.
+
+![](../readme-images/check-consumer-build-logs.png)
+
+
+## Step 10: Deploy Producer:
+
+1. Our consumer won't actually do anything until the producer is deployed. Follow the same steps as the consumer to add another application `From Dockerfile`. Set the url of the repo and set the context dir as `/producer`
+
+![](../readme-images/producer-dc-1.png)
+
+2. Give the Application Name `here` and Name `producer`, select `Deployment Config`. For deployment configureation, set the following environmental variables.
+
+`KAFKA_BROKERS` 
+```
+kafka-cluster-kafka-0.kafka-cluster-kafka-brokers,kafka-cluster-kafka-1.kafka-cluster-kafka-brokers,kafka-cluster-kafka-2.kafka-cluster-kafka-brokers
+```
+
+`HERE_API_KEY`
+```
+<YOUR_HERE_API_KEY>
+```
+
+Uncheck create route, and click `Create`
+
+![](../readme-images/producer-dc-2.png)
+
+3. You can check the build log the same way as consumer. By going to `Builds > producer > Logs`
+
+4. Once the build finishes our producer will start to produce records at an interval. To check the logs, select the producer pod from the Topology view. In the pod go to `Logs` to view logs.
+
+![](../readme-images/check-producer-log.png)
+
+5. We can also check the consumer logs
+
+![](../readme-images/check-consumer-log.png)
+
+![](../readme-images/check-log.png)
+
