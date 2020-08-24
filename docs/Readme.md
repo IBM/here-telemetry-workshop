@@ -313,3 +313,40 @@ Uncheck create route, and click `Create`
 
 ![](../readme-images/check-log.png)
 
+## Step 11: Find Route to Application
+
+1. Move to `Administrator` view.
+
+![](../readme-images/move-to-admin.png)
+
+2. Go to `Networking > Routes`. Our application route will be listed there.
+
+![](../readme-images/get-route.png)
+
+> The route we created is TLS encrypted as denoted by https protocol
+
+## Step 12: Explore the App
+
+1. Go to the URL specified in your route.
+
+You should see the following map.
+
+![](../readme-images/here-dashboard.png)
+
+2. You can also to to `<route>/graph` to see the vehicle metrics. Select a vehicle from the dropdown.
+
+![](../readme-images/vehicle-metrics.png)
+
+## Next Steps
+
+This was a simple demonstration on what can be achieved with the power of open source software on OpenShift and Location Services from Here. 
+
+You can learn more about OpenShift from the official docs https://docs.openshift.com/
+
+We have many great code patterns and contents at https://developer.ibm.com/components/redhat-openshift-ibm-cloud/
+
+## License
+This code pattern is licensed under the Apache License, Version 2. Separate third-party code objects invoked within this code pattern are licensed by their respective providers pursuant to their own separate licenses. Contributions are subject to the Developer Certificate of Origin, Version 1.1 and the Apache License, Version 2.
+
+[Apache License FAQ](https://www.apache.org/foundation/license-faq.html#WhatDoesItMEAN)
+
