@@ -99,3 +99,30 @@ Project is OpenShifts way to isolate workload and allow for multitenency. All ou
 
 ![Create Project](../readme-images/create-project-modal.png)
 
+## Step 6: Deploy MongoDB
+
+1. From Project Topology Select `From Catalog`
+
+![Select Catalog](../readme-images/select-catalog.png)
+
+> If we had something else running in this project, we would have to first click `+Add` to access this page.
+
+2. Under Databases find `MongoDB Ephemeral`
+
+![Select Mongo](../readme-images/select-mongo-ephemeral.png)
+
+> The main difference between MongoDB and MongoDB Ephemeral is that one is backed by persistent volume claim (PVC) and the ephemeral is not. In our application we do not need the persistence because we just want to show a live view of our fleet.
+
+3. Click on Instantiate Mongo
+
+![](../readme-images/instantiate-mongo.png)
+
+4. Configure MongoDB and click `Create`
+
+![](../readme-images/mongo-config.png)
+
+> The settings are not production ready. We would want to have tighter security for a production deployment. We can get away with it here because a. this is a demo and b. We wont expose this DB outside the cluster.
+
+5. After some time (Typically 30s to 1min) we should be able to see the mongo deployment.
+
+![](../readme-images/mongo-deployment-complete.png)
