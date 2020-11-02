@@ -53,15 +53,9 @@ With here you get a Freemium account that gives you access to here services for 
 
 2. Click on Generate App under `JAVASCRIPT`.
 
-![Generate App](../readme-images/here-create-js-app.png)
-
 3. You will see you APP ID. This information is used by some here services. Treat it like secrets. In the newer Here services however the API key is used. So we will need to create one. Click on create API Key.
 
-![Craete Api Key](../readme-images/here-create-api-key.png)
-
 4. You can have upto 2 API keys in the freemium account. We will need only one so this is not an issue. Save this API key for future use. You can always come back here and get access to this key.
-
-![Save Api Key](../readme-images/here-save-api-key.png)
 
 ## Step 4: Access your Openshift Cluster
 
@@ -75,17 +69,13 @@ Access your cluster from your dashboard.
 
 2. Select your cluster
 
-![Select Cluster](../readme-images/ibmcloud-select-cluster.png)
-
-3. Access OpenShift Console
+3. Access OpenShift Console by clicking `OpenShift Web Console` on the top right corner.
 
 ![OpenShift Dashboard](../readme-images/ibmcloud-openshift-dashboard.png)
 
 > You might need to allow your browser to open pop up.
 
 We will be doing the next few steps in the OpenShift Console.
-
-![First Page](../readme-images/first-page.png)
 
 ## Step 5: Create Project
 
@@ -97,8 +87,6 @@ Project is OpenShifts way to isolate workload and allow for multitenency. All ou
 
 2. Lets create a project named `here-metrics`
 
-![Create Project](../readme-images/create-project-modal.png)
-
 ## Step 6: Deploy MongoDB
 
 1. From Project Topology Select `From Catalog`
@@ -109,13 +97,9 @@ Project is OpenShifts way to isolate workload and allow for multitenency. All ou
 
 2. Under Databases find `MongoDB Ephemeral`
 
-![Select Mongo](../readme-images/select-mongo-ephemeral.png)
-
 > The main difference between MongoDB and MongoDB Ephemeral is that one is backed by persistent volume claim (PVC) and the ephemeral is not. In our application we do not need the persistence because we just want to show a live view of our fleet.
 
 3. Click on Instantiate Mongo
-
-![](../readme-images/instantiate-mongo.png)
 
 4. Configure MongoDB and click `Create`
 
@@ -125,19 +109,13 @@ Project is OpenShifts way to isolate workload and allow for multitenency. All ou
 
 5. After some time (Typically 30s to 1min) we should be able to see the mongo deployment.
 
-![](../readme-images/mongo-deployment-complete.png)
-
 ## Step 7: Deploy Kafka
 
-1. Move to Adminstrator tab in the console.
-
-![](../readme-images/move-to-administrator.png)
+1. Move to Adminstrator tab from the top left corner in the console.
 
 2. Go to `Operators > OperatorHub`. Search for `strimzi`. Click on `Strimzi`
 
-![](../readme-images/search-strimzi.png)
-
-[Strimzi](https://strimzi.io) is an Operator that manages the install lifecycle of Kafka on Kubernetes.
+> [Strimzi](https://strimzi.io) is an Operator that manages the install lifecycle of Kafka on Kubernetes.
 
 3. Instal Strimzi
 
@@ -145,21 +123,15 @@ Project is OpenShifts way to isolate workload and allow for multitenency. All ou
 
 4. Confirm installation of Community Operator. 
 
-![](../readme-images/continue-community-install.png)
-
 > Community Operators are operators that are made and maintained by the Operator Community. OpenShift does not provide any gurantee or support for it. 
 
 5. Subscibe to the operator for the `here-metrics` namespace.
-
-![](../readme-images/install-for-namespace.png)
 
 6. After a moment we should be able to see `Strimzi` in our installed operator list. Click on `Strimzi`
 
 ![](../readme-images/strimzi-install-complete.png)
 
-7. Click on create Kafka Instance
-
-![](../readme-images/create-kafka-instance.png)
+7. Click on `Create Instance` under the `Overview` tab Provided Apis.
 
 8. Lets name our instance `kafka-cluster` and change the storage to `ephemeral`. And click `Create`
 
@@ -167,19 +139,13 @@ Project is OpenShifts way to isolate workload and allow for multitenency. All ou
 
 9. Go to `Workloads > Pods` and after some time we should see 6 new pods. 3 kafka broker and 3 zookeeper instance. 
 
-![](../readme-images/kafka-running.png)
-
 With that our kafka installation is complete.
 
 Lets move back to developer view for the next steps
 
-![](../readme-images/move-to-developer.png)
-
 ## Step 8: Deploy Webapp
 
 1. Click on `+Add` and then Select `From Dockerfile`
-
-![](../readme-images/deploy-from-git-with-dockerfile.png)
 
 We will use the dockerfile we have for our application and openshift will build the container and push it to a local registry. This is a great feature of OpenShift that allows us to have the image local to the cluster.
 
@@ -219,11 +185,7 @@ mongodb://admin:admin@mongodb:27017
 
 3. Go to `Builds` and then select `webapp` 
 
-![](../readme-images/check-build-webapp.png)
-
 4. Under `Builds` tab select `webapp-1`
-
-![](../readme-images/webapp-build-logs.png)
 
 5. Go to `Logs` to see the build log. After some time you should see the build is complete.
 
@@ -233,8 +195,6 @@ mongodb://admin:admin@mongodb:27017
 ## Step 9: Deploy Consumer
 
 1. Click on `+Add` and then Select `From Dockerfile`
-
-![](../readme-images/deploy-from-git-with-dockerfile.png)
 
 We will use the dockerfile we have for our application and openshift will build the container and push it to a local registry. This is a great feature of OpenShift that allows us to have the image local to the cluster.
 
@@ -276,8 +236,6 @@ Select all the options as shown in the image below and click `Create`
 
 6. Check logs to see the build. This might take a moment. But eventually you will see the image was build and successfully pushed.
 
-![](../readme-images/check-consumer-build-logs.png)
-
 
 ## Step 10: Deploy Producer:
 
@@ -307,17 +265,11 @@ Uncheck create route, and click `Create`
 
 ![](../readme-images/check-producer-log.png)
 
-5. We can also check the consumer logs
-
-![](../readme-images/check-consumer-log.png)
-
-![](../readme-images/check-log.png)
+5. We can also check the consumer logs to see that the data produced by the producer was consumed by the consumer.
 
 ## Step 11: Find Route to Application
 
 1. Move to `Administrator` view.
-
-![](../readme-images/move-to-admin.png)
 
 2. Go to `Networking > Routes`. Our application route will be listed there.
 
