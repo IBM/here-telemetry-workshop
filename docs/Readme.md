@@ -71,8 +71,6 @@ Access your cluster from your dashboard.
 
 3. Access OpenShift Console by clicking `OpenShift Web Console` on the top right corner.
 
-![OpenShift Dashboard](../readme-images/ibmcloud-openshift-dashboard.png)
-
 > You might need to allow your browser to open pop up.
 
 We will be doing the next few steps in the OpenShift Console.
@@ -81,17 +79,13 @@ We will be doing the next few steps in the OpenShift Console.
 
 Project is OpenShifts way to isolate workload and allow for multitenency. All our workload needs to run in a Project.
 
-1. Click On Project at the Top
-
-![Craete Project](../readme-images/create-project.png)
+1. Click On Project at the Top. Click on create project.
 
 2. Lets create a project named `here-metrics`
 
 ## Step 6: Deploy MongoDB
 
-1. From Project Topology Select `From Catalog`
-
-![Select Catalog](../readme-images/select-catalog.png)
+1. Select `Topology` tab on the left then Select `From Catalog`
 
 > If we had something else running in this project, we would have to first click `+Add` to access this page.
 
@@ -119,8 +113,6 @@ Project is OpenShifts way to isolate workload and allow for multitenency. All ou
 
 3. Instal Strimzi
 
-![](../readme-images/install-strimzi.png)
-
 4. Confirm installation of Community Operator. 
 
 > Community Operators are operators that are made and maintained by the Operator Community. OpenShift does not provide any gurantee or support for it. 
@@ -128,8 +120,6 @@ Project is OpenShifts way to isolate workload and allow for multitenency. All ou
 5. Subscibe to the operator for the `here-metrics` namespace.
 
 6. After a moment we should be able to see `Strimzi` in our installed operator list. Click on `Strimzi`
-
-![](../readme-images/strimzi-install-complete.png)
 
 7. Click on `Create Instance` under the `Overview` tab Provided Apis.
 
