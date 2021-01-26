@@ -31,23 +31,7 @@ The following diagram shows the architecture of the fleet dash board application
 3. The MongoDB is populated by the consumer which gets its data from Kafka
 4. Producer generates the data using Here Location Services API and write to Kafka 
 
-## Step 1: Create or Login to IBM Cloud Account
-
-[Signup for IBM Cloud](https://cloud.ibm.com/registration)
-
-Or
-
-[Login to IBM Cloud](https://cloud.ibm.com/login)
-
-## Step 2: Create or Login to Here Developer Portal
-
-[Signup for Here](https://developer.here.com/sign-up)
-
-With here you get a Freemium account that gives you access to here services for free with a limit. 
-
-> As of writing this document (August, 2020) the limit on the free account was more than enough for the application we are building. Please refer to the latest document on [Here](developer.here.com) for current limit.
-
-## Step 3: Create a Here Javascript Project
+## Step 1: Create a Here Javascript Project
 
 1. In your Here Developer account. Navigate to list of projects. (For a freemium account you should only have one)
 
@@ -57,7 +41,7 @@ With here you get a Freemium account that gives you access to here services for 
 
 4. You can have upto 2 API keys in the freemium account. We will need only one so this is not an issue. Save this API key for future use. You can always come back here and get access to this key.
 
-## Step 4: Access your Openshift Cluster
+## Step 2: Access your Openshift Cluster
 
 Access your cluster from your dashboard. 
 
@@ -73,7 +57,7 @@ Access your cluster from your dashboard.
 
 We will be doing the next few steps in the OpenShift Console.
 
-## Step 5: Create Project
+## Step 3: Create Project
 
 Project is OpenShifts way to isolate workload and allow for multitenency. All our workload needs to run in a Project.
 
@@ -81,7 +65,7 @@ Project is OpenShifts way to isolate workload and allow for multitenency. All ou
 
 2. Lets create a project named `here-metrics`
 
-## Step 6: Deploy MongoDB
+## Step 4: Deploy MongoDB
 
 1. Select `Topology` tab on the left then Select `From Catalog`
 
@@ -109,7 +93,7 @@ and click `Create`
 
 5. After some time (Typically 30s to 1min) we should be able to see the mongo deployment.
 
-## Step 7: Deploy Kafka
+## Step 5: Deploy Kafka
 
 1. Move to Adminstrator tab from the top left corner in the console.
 
@@ -125,7 +109,7 @@ and click `Create`
 
 5. Subscibe to the operator for the `here-metrics` namespace.
 
-6. After a moment we should be able to see `Strimzi` in our installed operator list. Click on `Strimzi`
+6. After a moment (It usually takes under 2 minutes) we should be able to see `Strimzi` in our installed operator list. Click on `Strimzi`
 
 7. Click on `Create Instance` under the `Overview` tab Provided Apis.
 
@@ -137,13 +121,21 @@ spec.kafka.storage.type=ephemeral
 spec.zookeeper.storage.type=ephemeral
 ```
 
+Your final yaml file should look like this.
+
+![](../readme-images/modify-kafka-yaml.png)
+
 9. Go to `Workloads > Pods` and after some time we should see 6 new pods. 3 kafka broker and 3 zookeeper instance. 
+
+You should have this 6 pods in running state.
+
+![](../readme-images/kafka-running.png)
 
 With that our kafka installation is complete.
 
 Lets move back to developer view for the next steps
 
-## Step 8: Deploy Webapp
+## Step 6: Deploy Webapp
 
 1. Click on `+Add` and then Select `From Dockerfile`
 
@@ -159,6 +151,8 @@ If you made a fork of the project. You can use that too. Click on `Show Advance 
 
 For the `Dockerfile` section set the `Container Port` to `3000`.
 
+![](../readme-images/console-openshift-console-1.png)
+
 In General set Application name to `here` and name to `webapp`. Application is a way to group different services together. We will group services created by us into a single group like this. 
 
 Set Resources to `Deployment Config`.
@@ -167,7 +161,14 @@ In Advanced Options check `Create route`
 
 Click on routes, deployment and build configuration in the bottom of the page right above the `Create` button.
 
+![](../readme-images/console-openshift-console-2.png)
+
+
 In Routing security check secure route. If you are trying this on a openshift cluster not managed by IBM keep this unchecked. All IBM OpenShift clusters come pre configured with a TLS certificate for your application routes. For `TLS termination` select `Edge` and for `Insecure Traffic` select `Redirect`.
+
+![](../readme-images/console-openshift-console-3.png)
+
+In `Build Configuration` check `Configure a webhook build trigger`. We will not make use of this feature in this workshop. But this will allow us to setup a webhook that automatically build and push our changes to OpenShift when a new version of the app is sent in our version control system.
 
 For deployment we need 2 environmental variables.
 
@@ -181,18 +182,15 @@ mongodb://admin:admin@mongodb:27017
 <YOUR_HERE_API_KEY>
 ```
 
-![](../readme-images/console-openshift-console.png)
+![](../readme-images/console-openshift-console-4.png)
 
 3. Go to `Builds` and then select `webapp` 
 
 4. Under `Builds` tab select `webapp-1`
 
-5. Go to `Logs` to see the build log. After some time you should see the build is complete.
+5. Go to `Logs` to see the build log. Build takes around 2-5 minutes. After that you should see the build is complete.
 
-![](../readme-images/webapp-build-logs.png)
-
-
-## Step 9: Deploy Consumer
+## Step 7: Deploy Consumer
 
 1. Click on `+Add` and then Select `From Dockerfile`
 
@@ -204,11 +202,7 @@ We will use the dockerfile we have for our application and openshift will build 
 https://github.com/IBM/here-telemetry-workshop
 ```
 
-![](../readme-images/consumer-dc.png)
-
 3. Giv the Application Name `here` and Name `consumer`. For the resource type select `Deployment Config`. Deployment config is very much like a regular kubernetes deployment with a few extra features unique to OpenShift. And uncheck the create route to the application. Since this is an internal service, we do not want to have a route to it.
-
-![](../readme-images/consumer-dc-2.png)
 
 4. For the Deployment configuration set the following environmental variables.
 
@@ -228,20 +222,13 @@ Select all the options as shown in the image below and click `Create`
 
 > This variables correspond to the services we deployed in previous steps. If you changed the values from the default change these variables accordingly
 
-![](../readme-images/consumer-dc-3.png)
-
 5. Go to the build tab and select `consumer`
-
-![](../readme-images/check-consumer-build.png)
 
 6. Check logs to see the build. This might take a moment. But eventually you will see the image was build and successfully pushed.
 
-
-## Step 10: Deploy Producer:
+## Step 8: Deploy Producer:
 
 1. Our consumer won't actually do anything until the producer is deployed. Follow the same steps as the consumer to add another application `From Dockerfile`. Set the url of the repo and set the context dir as `/producer`
-
-![](../readme-images/producer-dc-1.png)
 
 2. Give the Application Name `here` and Name `producer`, select `Deployment Config`. For deployment configureation, set the following environmental variables.
 
@@ -257,17 +244,13 @@ kafka-cluster-kafka-0.kafka-cluster-kafka-brokers,kafka-cluster-kafka-1.kafka-cl
 
 Uncheck create route, and click `Create`
 
-![](../readme-images/producer-dc-2.png)
-
 3. You can check the build log the same way as consumer. By going to `Builds > producer > Logs`
 
 4. Once the build finishes our producer will start to produce records at an interval. To check the logs, select the producer pod from the Topology view. In the pod go to `Logs` to view logs.
 
-![](../readme-images/check-producer-log.png)
-
 5. We can also check the consumer logs to see that the data produced by the producer was consumed by the consumer.
 
-## Step 11: Find Route to Application
+## Step 9: Find Route to Application
 
 1. Move to `Administrator` view.
 
@@ -277,7 +260,7 @@ Uncheck create route, and click `Create`
 
 > The route we created is TLS encrypted as denoted by https protocol
 
-## Step 12: Explore the App
+## Step 10: Explore the App
 
 1. Go to the URL specified in your route.
 
