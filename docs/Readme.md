@@ -3,10 +3,11 @@
 In this code pattern, we build a realtime fleet telemetry with Here Location services and OpenShift. We will use open source technologies like NodeJS, Kafka and MongoDB to bring this all together.
 
 ## Introduction
+Here is a location platform that provides support for automotive, public sector and infrastructure, transportation and logistics and many other sectors where location data can be leveraged for improving service.
 
 Fleet Management is a core use case for HERE Technologies. Pair that with OpenShift and Kafka real time data processing capabilities and you get real time information about your fleet. In this workshop we will walk you through the simple process of deploying your own management website. You will set up a virtual fleet of vehicles driving around Chicago. Finally, we will also show you how to insert real-time vehicle parameters to track the health of the vehicles.
 
-## Included Components
+## Technologies
 
 * IBM Managed Openshift
 * Here Location Services
@@ -25,9 +26,10 @@ The following diagram shows the architecture of the fleet dash board application
 
 ![Architecture Diagram](../readme-images/arch-diagram.png)
 
-1. Producer generates the data using Here Location Services API and write to Kafka. 
-2. consumer read that message, process the data and write to MondoDB. 
-3. Finally the web app presents that data to the user in map and charts.
+1. User access the web application via their browser 
+2. Web applicaiton gets its data from the metrics MongoDB and create a live view of fleet and dashboard for metrics.
+3. The MongoDB is populated by the consumer which gets its data from Kafka
+4. Producer generates the data using Here Location Services API and write to Kafka 
 
 ## Step 1: Create or Login to IBM Cloud Account
 
@@ -49,8 +51,6 @@ With here you get a Freemium account that gives you access to here services for 
 
 1. In your Here Developer account. Navigate to list of projects. (For a freemium account you should only have one)
 
-![Here Projects](../readme-images/here-projects.png)
-
 2. Click on Generate App under `JAVASCRIPT`.
 
 3. You will see you APP ID. This information is used by some here services. Treat it like secrets. In the newer Here services however the API key is used. So we will need to create one. Click on create API Key.
@@ -64,8 +64,6 @@ Access your cluster from your dashboard.
 > If this is a guided workshop, your instructor will have most up-to-date documentation on accessing you cluster. 
 
 1. Go to list of clusters
-
-![IBM Cloud Dashboard](../readme-images/ibmcloud-dashboard.png)
 
 2. Select your cluster
 
@@ -95,9 +93,17 @@ Project is OpenShifts way to isolate workload and allow for multitenency. All ou
 
 3. Click on Instantiate Mongo
 
-4. Configure MongoDB and click `Create`
+4. Configure MongoDB with the following.
 
-![](../readme-images/mongo-config.png)
+```
+Database Service Name=mongodb
+MongoDB Conection Username=admin
+MongoDB Connection Password=admin
+MongoDB Database Name=admin
+MongoDB Admin Password=admin
+```
+
+and click `Create`
 
 > The settings are not production ready. We would want to have tighter security for a production deployment. We can get away with it here because a. this is a demo and b. We wont expose this DB outside the cluster.
 
@@ -123,9 +129,13 @@ Project is OpenShifts way to isolate workload and allow for multitenency. All ou
 
 7. Click on `Create Instance` under the `Overview` tab Provided Apis.
 
-8. Lets name our instance `kafka-cluster` and change the storage to `ephemeral`. And click `Create`
+8. Make the following changes to the yaml file
 
-![](../readme-images/modify-kafka-yaml.png)
+```
+metadata.name=kafka-cluster
+spec.kafka.storage.type=ephemeral
+spec.zookeeper.storage.type=ephemeral
+```
 
 9. Go to `Workloads > Pods` and after some time we should see 6 new pods. 3 kafka broker and 3 zookeeper instance. 
 
